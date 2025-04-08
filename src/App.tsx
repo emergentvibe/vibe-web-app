@@ -5,8 +5,9 @@ import BookmarkletPage from './pages/Bookmarklet';
 import './index.css';
 
 function App() {
-  // Get the basename from PUBLIC_URL for GitHub Pages support
-  const basename = process.env.PUBLIC_URL || '';
+  // For custom domain deployments, we should use empty basename
+  // Only use PUBLIC_URL for subdirectory deployments like GitHub Pages
+  const basename = '';
 
   return (
     <Router basename={basename}>
