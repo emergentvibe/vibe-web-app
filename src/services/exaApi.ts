@@ -56,7 +56,7 @@ export async function getRecommendations(url: string, sameDomain: boolean = fals
     }
 
     // Make the API request
-    const response = await fetch('https://api.exa.ai/findSimilar', {
+    const response = await fetch('https://social-experiments.glitch.me/proxy', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

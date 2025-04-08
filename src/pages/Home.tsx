@@ -23,20 +23,93 @@ const Home: React.FC = () => {
     hadRecommendations 
   } = useRecommendations();
 
-  // Check if API key exists on mount
+  // Check URL parameters and API key on mount
   useEffect(() => {
     const checkApiKey = async () => {
       const settings = await storage.getSettings();
       setHasApiKey(!!settings.exaApiKey);
     };
+
+    // Parse URL parameters
+    const queryParams = new URLSearchParams(window.location.search);
+    const urlParam = queryParams.get('url');
+    const sameDomainParam = queryParams.get('sameDomain');
+    
+    // Set values from URL parameters
+    if (urlParam) {
+      setUrl(urlParam);
+      
+      if (sameDomainParam === 'true') {
+        setSameDomain(true);
+      }
+    }
+
     checkApiKey();
-  }, [showSettings]); // Re-check when settings modal is closed
+  }, []);
+
+  // Check API key after settings modal closes
+  useEffect(() => {
+    if (!showSettings) {
+      const checkApiKey = async () => {
+        const settings = await storage.getSettings();
+        setHasApiKey(!!settings.exaApiKey);
+      };
+      checkApiKey();
+    }
+  }, [showSettings]);
+
+  // Auto-search if URL is provided and API key exists
+  useEffect(() => {
+    const autoSearch = async () => {
+      if (url && hasApiKey && !loading && recommendations.length === 0 && !hadRecommendations) {
+        await fetchRecommendations(url, sameDomain);
+      }
+    };
+    
+    autoSearch();
+  }, [url, hasApiKey, fetchRecommendations, sameDomain, loading, recommendations.length, hadRecommendations]);
+
+  // Update URL parameters when input changes
+  const updateUrlParams = (newUrl: string, newSameDomain: boolean) => {
+    if (newUrl) {
+      const queryParams = new URLSearchParams();
+      queryParams.set('url', newUrl);
+      
+      if (newSameDomain) {
+        queryParams.set('sameDomain', 'true');
+      }
+      
+      const browserUrl = `${window.location.pathname}?${queryParams.toString()}`;
+      window.history.pushState({ path: browserUrl }, '', browserUrl);
+    }
+  };
+
+  // Handle URL input change
+  const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newUrl = e.target.value;
+    setUrl(newUrl);
+    
+    // Update URL parameters immediately
+    updateUrlParams(newUrl, sameDomain);
+  };
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (url) {
+      // Update URL parameters
+      updateUrlParams(url, sameDomain);
+      
       fetchRecommendations(url, sameDomain);
     }
+  };
+
+  // Handler for same domain checkbox toggle
+  const handleSameDomainToggle = () => {
+    const newValue = !sameDomain;
+    setSameDomain(newValue);
+    
+    // Update URL parameters if we already have a URL
+    updateUrlParams(url, newValue);
   };
 
   return (
@@ -79,7 +152,7 @@ const Home: React.FC = () => {
                 label="Website URL"
                 placeholder="Enter a URL (e.g., https://example.com)"
                 value={url}
-                onChange={(e) => setUrl(e.target.value)}
+                onChange={handleUrlChange}
                 type="url"
               />
               
@@ -88,7 +161,7 @@ const Home: React.FC = () => {
                   <input
                     type="checkbox"
                     checked={sameDomain}
-                    onChange={() => setSameDomain(!sameDomain)}
+                    onChange={handleSameDomainToggle}
                     className="sr-only"
                   />
                   <span 
@@ -121,6 +194,9 @@ const Home: React.FC = () => {
               <h3 className="text-lg font-medium text-white mb-2">Enter a URL to get started</h3>
               <p className="text-gray-400">
                 Enter any website URL above to discover related content recommendations.
+              </p>
+              <p className="text-gray-400 mt-2 text-xs">
+                Share your recommendations by copying the URL after search.
               </p>
             </div>
           )}
