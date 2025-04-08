@@ -54,6 +54,9 @@ const BookmarkletPage: React.FC = () => {
                 ref={bookmarkletRef}
                 className="px-4 py-2 bg-accent hover:bg-accent-glow text-white font-medium rounded-md shadow-md transition-all"
                 draggable="true"
+                href="#bookmarklet-placeholder"
+                onClick={(e) => e.preventDefault()}
+                aria-label="Drag this to your bookmarks bar"
               >
                 <span className="mr-1">🔍</span> Get Vibe Recommendation
               </a>
