@@ -22,14 +22,12 @@ jobs:
         with:
           node-version: 18
           cache: 'npm'
-          cache-dependency-path: vibe-web-app/package-lock.json
+          cache-dependency-path: ./package-lock.json
 
       - name: Install dependencies
-        working-directory: vibe-web-app
         run: npm ci
 
       - name: Build project
-        working-directory: vibe-web-app
         run: npm run build
 
       - name: Setup Pages
@@ -38,7 +36,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: vibe-web-app/build
+          path: ./build
 
   deploy:
     environment:
