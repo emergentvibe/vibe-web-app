@@ -66,6 +66,31 @@ npm run build
 
 This will create an optimized production build in the `build` folder.
 
+## Deployment with GitHub Actions
+
+This project is configured to automatically deploy to GitHub Pages using GitHub Actions.
+
+### Setup Steps
+
+1. Push your code to GitHub in a repository
+2. Go to your repository on GitHub
+3. Go to Settings > Pages
+4. Under "Source", select "GitHub Actions"
+5. Push a change to the `main` branch or manually trigger the workflow from the "Actions" tab
+
+The GitHub Actions workflow will:
+1. Install dependencies
+2. Build the application
+3. Deploy to GitHub Pages
+
+Your site will be available at `https://<username>.github.io/<repository-name>/`
+
+### Manual Configuration
+
+If you need to customize the deployment, you can edit:
+- `.github/workflows/deploy.yml` - The GitHub Actions workflow
+- `package.json` - Update the "homepage" field to your specific URL
+
 ## License
 
 This project is licensed under the MIT License
